@@ -7,6 +7,9 @@ ENV APPDIR /app
 # (no need to clean the apt cache as this is an unpublished stage)
 RUN apt-get update && apt-get install -y dotnet6 ca-certificates
 
+WORKDIR $APPDIR
+RUN touch version.txt
+
 # add your application code
 WORKDIR $SOURCEDIR
 # using all files from this folder as a source
