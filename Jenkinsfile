@@ -37,7 +37,7 @@ pipeline
                             // Running the tests inside the new directory
                             dir("$SOURCEDIR") 
                             {
-                                sh "dotnet test ./showapp.test/"
+                                sh "dotnet test ./showapp.tests/"
                             }
                         }
                     } 
@@ -56,7 +56,7 @@ pipeline
                             dir("$SOURCEDIR") 
                             {
                                 // Deploy app to /app
-                                sh "dotnet publish ./showapp/ -c Release -r ubuntu.22.04-x64 --self-contianed true -o $APPDIR"
+                                sh "dotnet publish ./showapp/ -c Release -r ubuntu.22.04-x64 --self-contained true -o $APPDIR"
                             }
                             
                             // Remove sourcecode
