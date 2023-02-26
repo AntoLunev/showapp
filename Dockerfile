@@ -16,3 +16,4 @@ WORKDIR $SOURCEDIR
 COPY . .
 
 RUN dotnet build ./showapp/
+RUN dotnet publish ./showapp/ -c Release -r ubuntu.22.04-x64 --self-contained true -o $APPDIR

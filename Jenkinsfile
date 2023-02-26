@@ -15,7 +15,7 @@ pipeline
                 script
                 {
                     // Building the Docker image
-                    dockerImage = docker.build(registry + ":$BUILD_NUMBER")
+                    def dockerImage = docker.build(registry + ":$BUILD_NUMBER")
                 }
             }
         }
@@ -44,24 +44,6 @@ pipeline
                     catch (Exception ex)
                     {
                         testPassed = false
-                    }
-
-                    if (testPassed)
-                    {
-                        dockerImage.inside() 
-                        {
-                            // Extracting the APPDIR environment variable from inside the container
-                            def APPDIR = sh(script: 'echo \$APPDIR', returnStdout: true).trim()
-                            
-                            dir("$SOURCEDIR") 
-                            {
-                                // Deploy app to /app
-                                sh "dotnet publish ./showapp/ -c Release -r ubuntu.22.04-x64 --self-contained true -o $APPDIR"
-                            }
-                            
-                            // Remove sourcecode
-                            sh "rm -rf $SOURCEDIR"
-                        }
                     }
                 }
             }
