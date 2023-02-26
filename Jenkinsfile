@@ -15,7 +15,7 @@ pipeline
                 script
                 {
                     // Building the Docker image
-                    def dockerImage = docker.build(registry + ":$BUILD_NUMBER")
+                    def dockerImage = docker.build(registry + ":${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -72,6 +72,20 @@ pipeline
                 {
                     // Removing the docker image
                     sh "docker rmi $registry:$BUILD_NUMBER"
+                }
+            }
+        }
+        stage("Report")
+        {
+            steps
+            {
+                script
+                {
+                    if (!testPassed)
+                    {
+                        error "Tests failed!"
+                    }
+                    // Send email with notification if test failed or passed
                 }
             }
         }
