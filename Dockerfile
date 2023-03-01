@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y dotnet6 ca-certificates
 
 WORKDIR $APPDIR
 RUN touch version.txt
+RUN chmod -R 777 $APPDIR
 
 # add your application code
 WORKDIR $SOURCEDIR
