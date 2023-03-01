@@ -26,7 +26,7 @@ pipeline
             {
                 script 
                 {
-                    bool testPassed = true
+                    def testPassed = true
                     try 
                     {
                         dockerImage.inside() 
