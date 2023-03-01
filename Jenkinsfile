@@ -32,10 +32,11 @@ pipeline
                         echo "Running tests";
                         dockerImage.inside() 
                         {
+                            echo "test inside container 1"
                             // Extracting the SOURCEDIR environment variable from inside the container
                             def SOURCEDIR = sh(script: 'echo \$SOURCEDIR', returnStdout: true).trim()
 
-                            echo "test inside container"
+                            echo "test inside container 2"
                             // Running the tests inside the new directory
                             dir("$SOURCEDIR") 
                             {
@@ -47,6 +48,8 @@ pipeline
                     {
                         echo "there is an error!"
                         testPassed = false
+
+                        echo "Error is: ${ex}"
                     }
                     echo "was it successfull? ${testPassed}"
                 }
