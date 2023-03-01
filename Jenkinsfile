@@ -29,11 +29,13 @@ pipeline
                     testPassed = true
                     try 
                     {
+                        echo "Running tests";
                         dockerImage.inside() 
                         {
                             // Extracting the SOURCEDIR environment variable from inside the container
                             def SOURCEDIR = sh(script: 'echo \$SOURCEDIR', returnStdout: true).trim()
 
+                            echo "test inside container"
                             // Running the tests inside the new directory
                             dir("$SOURCEDIR") 
                             {
@@ -43,8 +45,10 @@ pipeline
                     } 
                     catch (Exception ex)
                     {
+                        echo "there is an error!"
                         testPassed = false
                     }
+                    echo "was it successfull? ${testPassed}"
                 }
             }
         }
