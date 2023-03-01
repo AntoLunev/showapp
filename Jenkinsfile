@@ -15,7 +15,7 @@ pipeline
                 script
                 {
                     // Building the Docker image
-                    def dockerImage = docker.build(registry + ":${env.BUILD_NUMBER}")
+                    dockerImage = docker.build(registry + ":${env.BUILD_NUMBER}")
                 }
             }
         }
