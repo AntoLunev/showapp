@@ -4,6 +4,7 @@ pipeline
     {
         // This registry is important for removing the image after the tests
         registry = "antonlunev/showapp"
+        dockerhublogin = credentials('dockerhublogin')
     }
     agent any
     stages 
@@ -14,61 +15,70 @@ pipeline
             {
                 script
                 {
-                    // Building the Docker image
-                    dockerImage = docker.build(registry + ":${env.BUILD_NUMBER}")
+                    try
+                    {
+                        // Building the Docker image
+                        dockerImage = docker.build(registry + ":${env.BUILD_NUMBER}")
+                    }
+                    catch (Exception ex)
+                    {
+                        echo "Error building image:"
+                        echo "$ex"
+                        error "Image build failed!"
+                    }
                 }
             }
         }
-        
         stage("Test") 
         {
             steps 
             {
-                script 
+                script
                 {
                     testPassed = true
-                    try 
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') 
                     {
-                        echo "Running tests";
-                        dockerImage.inside() 
+                        try
                         {
-                            echo "test inside container 1"
-                            // Extracting the SOURCEDIR environment variable from inside the container
-                            def SOURCEDIR = sh(script: 'echo \$SOURCEDIR', returnStdout: true).trim()
-
-                            echo "test inside container 2"
-                            // Running the tests inside the new directory
-                            dir("$SOURCEDIR") 
+                            dockerImage.inside() 
                             {
-                                sh "dotnet test ./showapp.tests/"
-                            }
-                        }
-                    } 
-                    catch (Exception ex)
-                    {
-                        echo "there is an error!"
-                        testPassed = false
+                                // Extracting the SOURCEDIR environment variable from inside the container
+                                def SOURCEDIR = sh(script: 'echo \$SOURCEDIR', returnStdout: true).trim()
 
-                        echo "Error is: ${ex}"
+                                // Running the tests
+                                sh "dotnet test ${SOURCEDIR}/showapp.tests/"
+                            }
+                        } 
+                        catch (Exception ex)
+                        {
+                            echo "Error testing image:"
+                            echo "$ex"
+                            testPassed = false
+
+                            error "Test failed!"
+                        }
                     }
-                    echo "was it successfull? ${testPassed}"
                 }
             }
         }
         stage("Upload image to repo")
         {
+            when 
+            { 
+                // Do this step only when image and code inside were successfullyu tested
+                equals expected: true, actual: testPassed 
+            }
             steps
             {
                 script
                 {
-                    if (testPassed)
-                    {
-                        // Push generated docker image to the registry
-                        dockerImage.push()
-                        // Also push it with a "latest" tag
-                        dockerImage.push('latest')
+                    // Authenticate to DockerHub
+                    sh 'docker login -u $dockerhublogin_USR -p $dockerhublogin_PSW'
+                    // Push generated docker image to the registry
+                    dockerImage.push()
+                    // Also push it with a "latest" tag
+                    dockerImage.push('latest')
                     }
-                }
             }
         }
         stage("Cleanup")
@@ -79,7 +89,9 @@ pipeline
                 {
                     // Removing the docker image
                     sh "docker rmi $registry:$BUILD_NUMBER"
+                    sh "docker rmi $registry:latest"
                 }
+
             }
         }
         stage("Report")
