@@ -6,7 +6,7 @@ ENV APPDIR /app
 # install the .NET 6 SDK from the Ubuntu archive
 # (no need to clean the apt cache as this is an unpublished stage)
 RUN apt-get update && apt-get install -y dotnet6 ca-certificates
-RUN groupadd -g 1001 jenkinsbuild
+RUN groupadd -g 1001 jenkinsbuild && useradd -u 1001 -g 1001 -m jenkinsbuild
 
 WORKDIR $APPDIR
 RUN touch version.txt
