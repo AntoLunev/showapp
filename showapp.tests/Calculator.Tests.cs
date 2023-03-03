@@ -72,4 +72,17 @@ public class UnitTest1
         Assert.IsType<int>(x);
     }
 
+    [Fact]
+    public void CalculatorSubstractTestsFloat1()
+    {
+        //
+        double a = 2.0, b = 3.0;
+        var calc = new Calculator();
+        
+        var x = calc.Substract(b,a);
+        
+        // assert
+        Assert.IsType<double>(x);
+    }
+
 }   
