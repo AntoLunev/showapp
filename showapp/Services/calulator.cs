@@ -28,7 +28,12 @@ public class Calculator
         return this.Add(b, a);
     }
     
-    public int substract(int a, int b)
+    public int Substract(int a, int b)
+    {
+        return a-b;
+    }
+    
+    public double Substract(double a, double b)
     {
         return a-b;
     }
