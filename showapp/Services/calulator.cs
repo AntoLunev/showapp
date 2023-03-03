@@ -27,4 +27,9 @@ public class Calculator
     {
         return this.Add(b, a);
     }
+    
+    public int substract(int a, int b)
+    {
+        return a-b;
+    }
 }
